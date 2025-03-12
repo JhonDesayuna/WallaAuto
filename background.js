@@ -72,6 +72,7 @@ async function processQueue() {
 
 async function startProcess() {
   isRunning = true;
+  notifyStateChange(); // Notificar a todos los content scripts del cambio de estado
   chrome.storage.local.get(['savedUrls'], async (result) => {
     executionQueue = [...result.savedUrls.map(url => ({ url }))];
 
@@ -80,6 +81,19 @@ async function startProcess() {
     } else {
       console.log("📌 No hay URLs guardadas para actualizar.");
       isRunning = false;
+    }
+  });
+}
+
+function notifyStateChange() {
+  chrome.tabs.query({}, tabs => {
+    for (let tab of tabs) {
+      chrome.tabs.sendMessage(tab.id, { 
+        action: "stateChanged", 
+        isRunning: isRunning 
+      }).catch(() => {
+        // Ignorar errores de envío (ocurre en pestañas donde no está cargado el content script)
+      });
     }
   });
 }
@@ -95,6 +109,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       executionQueue = [];
       isRunning = false;
       currentProcess = null;
+      notifyStateChange();
       sendResponse({ success: true });
       break;
 

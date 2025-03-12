@@ -1,9 +1,24 @@
 let lastProcessedUrl = null; // Para evitar ejecuciones repetidas en la misma URL
+let isAutomationActive = false; // Bandera para controlar si la automatización está activa
+
+// Verificar el estado de la extensión al cargar
+chrome.runtime.sendMessage({ action: "getStatus" }, response => {
+  if (response && typeof response.isRunning !== 'undefined') {
+    isAutomationActive = response.isRunning;
+    console.log(`Estado de automatización: ${isAutomationActive ? "Activo" : "Inactivo"}`);
+    
+    // Solo ejecutamos main al inicio si la automatización está activa
+    if (isAutomationActive) {
+      main();
+    }
+  }
+});
 
 function detectPageType() {
   const path = window.location.pathname;
   if (path.includes("/item/")) return "DETAIL";
   if (path.includes("/app/catalog/edit/")) return "EDIT";
+  if (path.includes("/app/catalog/published")) return "PUBLISHED";
   return "OTHER";
 }
 
@@ -33,9 +48,7 @@ function handleEditPage() {
           btn.click();
           updateClicked = true;
 
-          setTimeout(() => {
-            chrome.runtime.sendMessage({ action: "updateCompleted" });
-          }, 3000);
+          // Ya no necesitamos enviar el mensaje aquí, lo haremos cuando detectemos la página published
         }
       }
     });
@@ -47,12 +60,24 @@ function handleEditPage() {
   }, 4000);
 }
 
+function handlePublishedPage() {
+  console.log("✅ Producto actualizado correctamente, notificando éxito...");
+  chrome.runtime.sendMessage({ action: "updateCompleted" });
+}
+
 function main() {
+  // No hacer nada si la automatización no está activa
+  if (!isAutomationActive) {
+    console.log("⏸️ La automatización está inactiva, no se realizará ninguna acción.");
+    return;
+  }
+
   const currentUrl = window.location.href;
   if (currentUrl === lastProcessedUrl) return; // Evitar ejecuciones repetidas en la misma URL
 
   lastProcessedUrl = currentUrl;
   const pageType = detectPageType();
+  console.log(`📌 Tipo de página detectado: ${pageType} - URL: ${currentUrl}`);
 
   switch (pageType) {
     case "DETAIL":
@@ -61,16 +86,33 @@ function main() {
     case "EDIT":
       handleEditPage();
       break;
+    case "PUBLISHED":
+      handlePublishedPage();
+      break;
     default:
-      console.warn("⚠️ Página no compatible");
+      console.warn(`⚠️ Página no compatible: ${currentUrl}`);
   }
 }
 
-// Ejecutar `main` cuando la URL cambie
-chrome.runtime.onMessage.addListener((message) => {
+// Ejecutar `main` cuando la URL cambie y escuchar cambios en el estado de la extensión
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "urlChanged") {
-    main();
+    // Verificar el estado actual antes de procesar
+    chrome.runtime.sendMessage({ action: "getStatus" }, response => {
+      if (response && response.isRunning) {
+        isAutomationActive = true;
+        main();
+      } else {
+        isAutomationActive = false;
+        console.log("⏸️ La automatización está inactiva, no se realizarán acciones.");
+      }
+    });
+  } 
+  // También podemos escuchar mensajes de cambio de estado directamente
+  else if (message.action === "stateChanged") {
+    isAutomationActive = message.isRunning;
+    console.log(`Estado de automatización actualizado: ${isAutomationActive ? "Activo" : "Inactivo"}`);
   }
 });
 
-main(); // Ejecutar al cargar la página
+// NO ejecutamos main automáticamente al cargar, solo cuando verificamos que la automatización está activa
