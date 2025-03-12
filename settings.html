@@ -1,565 +1,61 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administrar Enlaces - Wallapop Auto Updater PRO</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <title>Configuración - Wallapop Updater</title>
   <style>
-    :root {
-      --primary-color: #13c1ac;
-      --primary-dark: #0fa192;
-      --secondary-color: #2c3e50;
-      --danger-color: #e74c3c;
-      --success-color: #2ecc71;
-      --warning-color: #f39c12;
-      --light-gray: #f8f9fa;
-      --border-radius: 8px;
-      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s ease;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
     body {
-      max-width: 800px;
-      margin: 0 auto;
-      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #ffffff;
-      color: var(--secondary-color);
-      padding: 2rem;
-      line-height: 1.6;
+      width: 400px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
     }
-    
-    .container {
+    .url-input-group {
+      margin-bottom: 15px;
       display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+      gap: 10px;
     }
-    
-    .header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #f0f0f0;
-      padding-bottom: 1rem;
-      margin-bottom: 0.5rem;
+    input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
     }
-    
-    .app-title {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .app-title h1 {
-      color: var(--primary-color);
-      font-size: 1.75rem;
-      font-weight: 600;
-    }
-    
-    .app-logo {
-      font-size: 2rem;
-      color: var(--primary-color);
-    }
-    
-    .version-badge {
-      background-color: var(--light-gray);
-      color: var(--secondary-color);
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 1rem;
-      font-weight: 500;
-    }
-    
-    .header-actions {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-    
-    .breadcrumb {
-      display: flex;
-      align-items: center;
-      font-size: 0.875rem;
-      color: #7f8c8d;
-      margin-bottom: 1rem;
-    }
-    
-    .breadcrumb a {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-    
-    .breadcrumb a:hover {
-      text-decoration: underline;
-    }
-    
-    .breadcrumb i {
-      margin: 0 0.5rem;
-      font-size: 0.75rem;
-    }
-    
-    .card {
-      background: white;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      overflow: hidden;
-    }
-    
-    .card-header {
-      background: var(--light-gray);
-      padding: 1rem;
-      border-bottom: 1px solid #ecf0f1;
-    }
-    
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.25rem;
-      font-weight: 500;
-    }
-    
-    .card-body {
-      padding: 1.5rem;
-    }
-    
-    .card-footer {
-      padding: 1rem;
-      background: var(--light-gray);
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      border-top: 1px solid #ecf0f1;
-    }
-    
-    .url-textarea {
-      width: 100%;
-      min-height: 300px;
-      padding: 1rem;
-      border: 1px solid #dfe6e9;
-      border-radius: var(--border-radius);
-      font-family: inherit;
-      font-size: 0.9rem;
-      line-height: 1.6;
-      resize: vertical;
-      transition: var(--transition);
-    }
-    
-    .url-textarea:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(19, 193, 172, 0.1);
-    }
-    
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      background: var(--primary-color);
+    button {
+      padding: 8px 15px;
+      background: #3498db;
       color: white;
       border: none;
-      padding: 0.75rem 1.25rem;
-      border-radius: var(--border-radius);
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 1rem;
-      font-weight: 500;
-      transition: var(--transition);
     }
-    
-    .btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
+    #urlList {
+      margin: 20px 0;
     }
-    
-    .btn:active {
-      transform: translateY(0);
-    }
-    
-    .btn:disabled {
-      background: #b2bec3;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .btn-secondary {
-      background: #ecf0f1;
-      color: var(--secondary-color);
-    }
-    
-    .btn-secondary:hover {
-      background: #dfe6e9;
-    }
-    
-    .btn-danger {
-      background: var(--danger-color);
-    }
-    
-    .btn-danger:hover {
-      background: #c0392b;
-    }
-    
-    .info-box {
-      padding: 1rem;
-      border-radius: var(--border-radius);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .info-box.info {
-      background-color: #e1f5fe;
-      border-left: 4px solid #03a9f4;
-    }
-    
-    .info-box.warning {
-      background-color: #fff8e1;
-      border-left: 4px solid var(--warning-color);
-    }
-    
-    .info-box.error {
-      background-color: #ffebee;
-      border-left: 4px solid var(--danger-color);
-    }
-    
-    .info-box.success {
-      background-color: #e8f5e9;
-      border-left: 4px solid var(--success-color);
-    }
-    
-    .info-box i {
-      font-size: 1.25rem;
-    }
-    
-    .info-box.info i {
-      color: #03a9f4;
-    }
-    
-    .info-box.warning i {
-      color: var(--warning-color);
-    }
-    
-    .info-box.error i {
-      color: var(--danger-color);
-    }
-    
-    .info-box.success i {
-      color: var(--success-color);
-    }
-    
-    .info-content {
-      flex: 1;
-    }
-    
-    .info-content h4 {
-      font-size: 1rem;
-      margin-bottom: 0.25rem;
-    }
-    
-    .info-content p {
-      font-size: 0.875rem;
-      margin: 0;
-    }
-    
-    .stats-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .stat-item {
-      flex: 1;
-      min-width: 150px;
-      background: var(--light-gray);
-      padding: 1rem;
-      border-radius: var(--border-radius);
-      text-align: center;
-    }
-    
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--primary-color);
-      margin-bottom: 0.25rem;
-    }
-    
-    .stat-label {
-      font-size: 0.75rem;
-      color: #7f8c8d;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    
-    .url-list {
-      margin-top: 1.5rem;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ecf0f1;
-      border-radius: var(--border-radius);
-    }
-    
-    .url-item {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #ecf0f1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .url-item:last-child {
-      border-bottom: none;
-    }
-    
-    .url-item-text {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 80%;
-      font-size: 0.875rem;
-    }
-    
-    .url-item-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .url-item-actions button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #7f8c8d;
-      transition: var(--transition);
-    }
-    
-    .url-item-actions button:hover {
-      color: var(--primary-color);
-    }
-    
-    .url-item-actions button.delete-btn:hover {
-      color: var(--danger-color);
-    }
-    
-    .tabs {
-      display: flex;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid #ecf0f1;
-    }
-    
-    .tab {
-      padding: 0.75rem 1.25rem;
-      cursor: pointer;
-      transition: var(--transition);
-      border-bottom: 3px solid transparent;
-    }
-    
-    .tab.active {
-      border-bottom-color: var(--primary-color);
-      color: var(--primary-color);
-      font-weight: 500;
-    }
-    
-    .tab:hover:not(.active) {
-      border-bottom-color: #bdc3c7;
-    }
-    
-    .tab-content {
-      display: none;
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    .button-group {
-      display: flex;
-      gap: 0.75rem;
-    }
-    
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    .footer {
-      margin-top: 2rem;
-      padding-top: 1rem;
-      border-top: 1px solid #ecf0f1;
-      font-size: 0.875rem;
-      color: #7f8c8d;
-      text-align: center;
-    }
-    
-    .url-validation-icon {
-      margin-right: 0.5rem;
-    }
-    
-    .url-validation-icon.valid {
-      color: var(--success-color);
-    }
-    
-    .url-validation-icon.invalid {
-      color: var(--danger-color);
-    }
-    
-    @media (max-width: 768px) {
-      body {
-        padding: 1rem;
-      }
-      
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .header-actions {
-        margin-top: 1rem;
-        width: 100%;
-      }
+    .back-btn {
+      background: #7f8c8d;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="app-title">
-        <i class="app-logo fas fa-sync-alt"></i>
-        <h1>Wallapop Auto Updater</h1>
-        <span class="version-badge">v2.1</span>
-      </div>
-      <div class="header-actions">
-        <button id="backBtn" class="btn btn-secondary">
-          <i class="fas fa-arrow-left"></i>
-          <span>Volver al inicio</span>
-        </button>
-      </div>
-    </div>
-    
-    <div class="breadcrumb">
-      <a href="#" id="homeLink">Inicio</a>
-      <i class="fas fa-chevron-right"></i>
-      <span>Administrar Enlaces</span>
-    </div>
-    
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">
-          <i class="fas fa-link"></i>
-          <span>Configuración de Enlaces</span>
-        </div>
-      </div>
-      
-      <div class="card-body">
-        <div class="info-box info">
-          <i class="fas fa-info-circle"></i>
-          <div class="info-content">
-            <h4>Cómo añadir enlaces</h4>
-            <p>Añade tus enlaces de productos de Wallapop, uno por línea. Los enlaces deben tener el formato: <strong>https://es.wallapop.com/item/nombre-del-producto-123456</strong></p>
-          </div>
-        </div>
-        
-        <div class="stats-bar">
-          <div class="stat-item">
-            <div id="validUrlsCount" class="stat-value">0</div>
-            <div class="stat-label">Enlaces válidos</div>
-          </div>
-          <div class="stat-item">
-            <div id="invalidUrlsCount" class="stat-value">0</div>
-            <div class="stat-label">Enlaces inválidos</div>
-          </div>
-          <div class="stat-item">
-            <div id="totalUrlsCount" class="stat-value">0</div>
-            <div class="stat-label">Total</div>
-          </div>
-        </div>
-        
-        <div class="tabs">
-          <div class="tab active" data-tab="textarea">Editor de Texto</div>
-          <div class="tab" data-tab="list">Lista Individual</div>
-        </div>
-        
-        <div id="textareaTab" class="tab-content active">
-          <textarea
-            id="urlsTextarea"
-            class="url-textarea"
-            placeholder="Introduce tus enlaces aquí, uno por línea.
-Ejemplo:
-https://es.wallapop.com/item/apple-iphone-12-pro-max-128gb-seminuevo-123456
-https://es.wallapop.com/item/portatil-gaming-asus-rog-strix-g15-456789"
-          ></textarea>
-        </div>
-        
-        <div id="listTab" class="tab-content">
-          <div class="button-group" style="margin-bottom: 1rem;">
-            <button id="addUrlBtn" class="btn btn-secondary">
-              <i class="fas fa-plus"></i>
-              <span>Añadir Nuevo Enlace</span>
-            </button>
-            <button id="clearAllBtn" class="btn btn-danger">
-              <i class="fas fa-trash"></i>
-              <span>Eliminar Todos</span>
-            </button>
-          </div>
-          
-          <div id="urlListContainer" class="url-list">
-            <!-- URL items will be dynamically added here -->
-          </div>
-        </div>
-        
-        <div id="messageContainer" style="margin-top: 1rem;"></div>
-      </div>
-      
-      <div class="card-footer">
-        <button id="importBtn" class="btn btn-secondary">
-          <i class="fas fa-file-import"></i>
-          <span>Importar</span>
-        </button>
-        <button id="exportBtn" class="btn btn-secondary">
-          <i class="fas fa-file-export"></i>
-          <span>Exportar</span>
-        </button>
-        <button id="validateBtn" class="btn btn-secondary">
-          <i class="fas fa-check-circle"></i>
-          <span>Validar Enlaces</span>
-        </button>
-        <button id="saveBtn" class="btn">
-          <i class="fas fa-save"></i>
-          <span>Guardar Enlaces</span>
-        </button>
-      </div>
-    </div>
-    
-    <div class="footer">
-      <p>Wallapop Auto Updater PRO &copy; 2025</p>
-    </div>
-
-    <!-- Template for URL items (hidden) -->
-    <template id="urlItemTemplate">
-      <div class="url-item">
-        <div class="url-item-text"></div>
-        <div class="url-item-actions">
-          <button class="edit-btn" title="Editar">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="delete-btn" title="Eliminar">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      </div>
-    </template>
-    
-    <!-- Hidden input for file import -->
-    <input type="file" id="fileInput" style="display: none;" accept=".txt,.json">
+  <h2>🔗 Administrar Enlaces</h2>
+  <textarea 
+  id="urlsTextarea" 
+  placeholder="Pega tus enlaces aquí, uno por línea."
+  style="
+    width: 100%;
+    height: 250px;
+    margin: 15px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+  "
+></textarea>
+  <div style="margin-top: 20px;">
+    <button id="saveBtn">💾 Guardar Enlaces</button>
+    <button class="back-btn" id="backBtn">🔙 Volver</button>
   </div>
+
   <script src="settings.js"></script>
 </body>
 </html>
